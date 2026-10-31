@@ -1,11 +1,20 @@
 <resources>
-    <string name="app_name">Gemini Sync</string>
-    <string name="chat_hint">Pregunta algo a Gemini...</string>
-    <string name="sync_button">Sincronizar Memoria</string>
+    <string name="app_name">Gemini Sync Pro</string>
+    <string name="chat_hint">Pregunta o dicta a Gemini...</string>
+    <string name="sync_button">⚡ Sync</string>
     <string name="settings_title">Configuración de Sincronización</string>
     <string name="api_key_label">Google Gemini API Key</string>
     <string name="github_token_label">GitHub Token (Opcional para Push directo)</string>
     <string name="github_repo_label">Repositorio GitHub (ej. GhostLT/cool-newton)</string>
     <string name="save_settings">Guardar Cambios</string>
     <string name="sync_success">¡Memoria técnica sincronizada con éxito!</string>
+    <string name="new_branch">Nueva Rama / Chat</string>
+    <string name="mode_deep_research">🔍 Deep Research</string>
+    <string name="mode_canvas">📝 Canvas Mode</string>
+    <string name="mode_learning">🎓 Aprendizaje Guiado</string>
+    <string name="mode_image">🎨 Crear Imágenes</string>
+    <string name="mode_media">🎬 Video &amp; Música Studio</string>
+    <string name="action_share">Compartir con otra app</string>
+    <string name="action_gmail">Crear borrador en Gmail</string>
+    <string name="action_export">Exportar a Markdown</string>
 </resources>

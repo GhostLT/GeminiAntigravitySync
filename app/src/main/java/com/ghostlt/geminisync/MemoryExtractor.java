@@ -49,7 +49,7 @@ public class MemoryExtractor {
                 "- **Solución**: [Cómo se arregló]\n\n" +
                 "Devuelve ÚNICAMENTE este formato Markdown, sin texto adicional.";
 
-        apiClient.sendMessage(history, extractionInstruction, apiKey, new GeminiApiClient.GeminiCallback() {
+        apiClient.sendMessage(history, extractionInstruction, null, null, apiKey, new GeminiApiClient.GeminiCallback() {
             @Override
             public void onSuccess(String reply) {
                 callback.onExtracted(reply);

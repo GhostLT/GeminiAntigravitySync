@@ -1,58 +1,60 @@
-# 🚀 GeminiSync Android (Unificador Automático Antigravity)
+# 🚀 GeminiSync Pro (Asistente Multimodal y Sincronizador Antigravity)
 
-Aplicación Android nativa desarrollada en Java y Material Components 3 para chatear con la API oficial de **Google Gemini** y **sincronizar automáticamente la memoria técnica** con tu entorno local de **Antigravity en PC**.
-
----
-
-## 📱 ¿Qué hace esta aplicación?
-
-1. **Chat de Inteligencia Artificial con Gemini**:
-   - Conexión directa y fluida a los modelos más veloces de Google: `gemini-2.5-flash`, `gemini-2.0-flash` y `gemini-1.5-flash` con conmutación por error (auto-fallback).
-   - Historial conversacional interactivo con diseño oscuro moderno.
-
-2. **Extracción y Depuración Automatizada (Fase 1)**:
-   - Al finalizar un tema o salir de la aplicación, el motor de extracción destila quirúrgicamente el núcleo técnico de la conversación eliminando saludos, cortesías y charla.
-   - Clasifica la información en las 4 secciones estándar del ecosistema Antigravity:
-     - `system_profile` (directrices y entorno)
-     - `decisions` (decisiones de arquitectura ADR)
-     - `technical_solutions` (código, scripts y snippets funcionales)
-     - `lessons_learned` (errores resueltos e incompatibilidades)
-
-3. **Sincronización de Cero Clics (Fase 2 y 3)**:
-   - **Local / Termux**: Guarda automáticamente el archivo `.md` generado en `/sdcard/Download/inbox_historial/sesion_YYYYMMDD_HHMMSS.md` para que Termux o tu sincronización de nube lo tenga sin tocar nada.
-   - **Push Directo a GitHub (Zero-Touch)**: Si configuras un GitHub Personal Access Token (PAT), la app realiza un `PUT` a la API de GitHub y sube el archivo directamente a tu repositorio (`.agent/memory/inbox_historial/`).
-   - La automatización de las 9:00 PM de Antigravity en tu PC lo toma, clasifica y unifica en tu base de conocimiento.
+Aplicación Android nativa de última generación desarrollada en Java y Material Components 3 para potenciar tu flujo de trabajo con **Google Gemini**, integrando visión computacional, dictado por voz, síntesis auditiva, modos avanzados y **sincronización automática de memoria técnica** con tu entorno local de **Antigravity en PC**.
 
 ---
 
-## 🛠️ Requisitos Técnicos
+## ✨ Nuevas Características Implementadas
 
-- **Android 8.0+** (API 26 mínima, SDK 34 compatible).
-- **Google Gemini API Key** (Gratis en [Google AI Studio](https://aistudio.google.com/)).
-- **GitHub Token** (Opcional, solo si deseas push remoto directo sin cables).
+### 1. 📎 Multimodalidad Total (Screenshots, Archivos y Cámara)
+- **Adjuntar Capturas de Pantalla / Archivos**: Botón de clip (📎) para seleccionar cualquier imagen o screenshot desde tu galería. Se envía directamente a Gemini mediante `inline_data` Base64.
+- **Cámara Instantánea**: Botón de cámara (📷) para tomar fotos en tiempo real y analizarlas con Gemini al instante.
+- **Recepción desde otras apps**: La app aparece en el menú de "Compartir" de Android para recibir textos e imágenes de cualquier otra aplicación.
+
+### 2. 🎙️ Dictado por Voz & 🔊 Texto a Voz (TTS)
+- **Icono de Micrófono (Speech-to-Text)**: Toca el micrófono para dictar prompts largos sin escribir una sola letra.
+- **Icono de Bocina (Text-to-Speech)**: Cada respuesta de Gemini cuenta con un botón de altavoz para escuchar la explicación en voz alta en español.
+
+### 3. 🌱 Ramas de Conversación (Branching)
+- **Botón Nueva Rama (+)**: Inicia una nueva sesión limpia. Automáticamente extrae y respalda el conocimiento de la sesión anterior en la memoria de tu PC antes de limpiar la pantalla.
+
+### 4. 📤 Compartir & ✉️ Borrador en Gmail
+- **Compartir con otras apps**: Envía cualquier solución o respuesta a WhatsApp, Telegram, Slack o notas con un solo toque.
+- **Borrador en Gmail**: Genera al instante un correo en Gmail con el asunto y la solución técnica estructurada lista para enviar.
+
+### 5. 💡 Modos Especiales de Inteligencia Artificial
+Accede al menú **Modos** en la barra superior para alternar entre:
+- 🔍 **Deep Research**: Modo de investigación exhaustiva y multidimensional. Desglosa arquitectura técnica, pros, contras, casos límite y estado del arte.
+- 📝 **Canvas Mode**: Visor de pantalla completa para código fuente y documentación técnica sin omisiones, con botones directos para copiar y compartir.
+- 🎓 **Aprendizaje Guiado (Tutor)**: Mentor socrático que enseña de forma progresiva, hace preguntas de comprobación y explica paso a paso.
+- 🎨 **Crear Imágenes (Imagen 3)**: Generador de directivas y composiciones fotográficas hiperdetalladas optimizadas para modelos de difusión visual.
+- 🎬 **Video & Música Studio**: Guiones cinematográficos para video generativo (Sora / Runway / Omni) y métricas líricas para composición musical (Suno / Udio).
+
+### 6. ⚡ Sincronización Automática con tu PC (Zero-Touch)
+- **Fase 1 (Extracción quirúrgica)**: Al salir de la app o tocar `⚡ Sync`, el motor destila las 4 secciones estándar (`system_profile`, `decisions`, `technical_solutions`, `lessons_learned`).
+- **Fase 2 & 3 (Respaldo)**:
+  - Guarda automáticamente en `/sdcard/Download/inbox_historial/sesion_YYYYMMDD_HHMMSS.md`.
+  - Si configuras tu GitHub Token en Ajustes (⚙️), realiza un push directo vía GitHub API a tu repositorio.
+  - Tu PC unifica la memoria cada noche a las 9:00 PM sin que muevas un dedo.
 
 ---
 
-## ⚙️ Configuración en la App
+## 📦 Descarga e Instalación
 
-1. Abre la aplicación en tu teléfono Android.
-2. Toca el ícono de engranaje (⚙️) en la barra superior.
-3. Ingresa tu **Gemini API Key**.
-4. *(Opcional)* Ingresa tu **GitHub Personal Access Token** y el nombre de tu repositorio (`GhostLT/cool-newton`).
-5. Mantén marcado **"Auto-sincronizar automáticamente al salir del chat"**.
-
-A partir de ahí, solo consulta tus dudas de código y arquitectura en la app. La memoria de tu PC se mantendrá unificada automáticamente.
+El ejecutable compilado listo para instalar en tu teléfono se encuentra en tu Escritorio:
+* **Ruta**: `C:\Users\PC\Desktop\GeminiSyncPro.apk` (o `GeminiSync.apk`)
 
 ---
 
-## 📦 Compilación y APK
+## 🚀 Subir Cambios a GitHub (GhostLT)
 
-El ejecutable listo para instalar se encuentra disponible en:
-- `app/build/outputs/apk/debug/app-debug.apk`
-- Copia directa en el Escritorio: `GeminiSync.apk`
+Para subir todas estas nuevas implementaciones a tu GitHub:
+1. Haz doble clic en el script:
+   [`C:\proyectos\GeminiAntigravitySync\subir_a_github.bat`](file:///c:/proyectos/GeminiAntigravitySync/subir_a_github.bat)
+2. El script empaqueta todos los cambios, realiza el commit semántico y ejecuta el push vía SSH a `git@github.com:GhostLT/GeminiAntigravitySync.git`.
 
 ---
 
 ## 👤 Autor
 - **Desarrollador**: GhostLT (`viverosjavier86@gmail.com`)
-- **Ecosistema**: Google Antigravity & Termux
+- **Ecosistema**: Google Antigravity & Android Nativo

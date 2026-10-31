@@ -17,61 +17,96 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:padding="10dp">
 
-            <TextView
-                android:id="@+id/tvAppTitle"
+            <LinearLayout
+                android:id="@+id/layoutTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/layoutTopActions"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvAppTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨ Gemini Sync Pro"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSyncStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="● Modo Estándar"
+                    android:textColor="@color/accent_green"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Actions Row -->
+            <LinearLayout
+                android:id="@+id/layoutTopActions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="✨ Gemini Sync"
-                android:textColor="@color/primary_blue"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/tvSyncStatus"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvSyncStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="● Listo (Auto-Sync activo)"
-                android:textColor="@color/accent_green"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAppTitle" />
-
-            <!-- Sync Now Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnQuickSync"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginEnd="8dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:text="⚡ Sync"
-                android:textColor="@color/primary_blue"
-                android:textSize="12sp"
-                app:cornerRadius="18dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnSettings"
-                app:layout_constraintTop_toTopOf="parent"
-                app:strokeColor="@color/primary_blue" />
-
-            <!-- Settings Button -->
-            <ImageButton
-                android:id="@+id/btnSettings"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Configuracion"
-                android:src="@android:drawable/ic_menu_preferences"
-                android:tint="@color/text_secondary"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <!-- Botón Nueva Rama / Nuevo Chat -->
+                <ImageButton
+                    android:id="@+id/btnNewBranch"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Nueva Rama / Nuevo Chat"
+                    android:src="@android:drawable/ic_input_add"
+                    android:tint="@color/text_primary" />
+
+                <!-- Botón Modos (Deep Research, Canvas, etc) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModes"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="💡 Modos"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="11sp"
+                    app:cornerRadius="17dp"
+                    app:strokeColor="@color/primary_blue" />
+
+                <!-- Quick Sync -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnQuickSync"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="⚡ Sync"
+                    android:textColor="@color/accent_green"
+                    android:textSize="11sp" />
+
+                <!-- Settings -->
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="2dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Configuracion"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    android:tint="@color/text_secondary" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -83,7 +118,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@id/layoutInput"
+        app:layout_constraintBottom_toTopOf="@id/layoutAttachmentPreview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardTopBar" />
@@ -94,10 +129,55 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/layoutInput"
+        app:layout_constraintBottom_toTopOf="@id/layoutAttachmentPreview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardTopBar" />
+
+    <!-- Vista previa de archivo / captura adjunta -->
+    <LinearLayout
+        android:id="@+id/layoutAttachmentPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_surface_light"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layoutInput">
+
+        <ImageView
+            android:id="@+id/ivPreviewThumbnail"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/bg_dark"
+            android:contentDescription="Preview adjunto"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/tvPreviewName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Captura adjunta lista para análisis"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/btnRemoveAttachment"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Quitar adjunto"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:tint="#FF5252" />
+    </LinearLayout>
 
     <!-- Input Bar -->
     <androidx.cardview.widget.CardView
@@ -111,28 +191,70 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:padding="6dp">
+
+            <!-- Botón Adjuntar (Clip) -->
+            <ImageButton
+                android:id="@+id/btnAttach"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Adjuntar captura o archivo"
+                android:src="@android:drawable/ic_menu_gallery"
+                android:tint="@color/primary_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Botón Cámara Rápida -->
+            <ImageButton
+                android:id="@+id/btnCamera"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Foto con cámara"
+                android:src="@android:drawable/ic_menu_camera"
+                android:tint="@color/text_secondary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnAttach"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/etMessageInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
                 android:background="@null"
                 android:hint="@string/chat_hint"
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxLines="5"
                 android:minHeight="44dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_secondary"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnSend"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnMic"
+                app:layout_constraintStart_toEndOf="@id/btnCamera"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- Botón Micrófono (Dictado por Voz) -->
+            <ImageButton
+                android:id="@+id/btnMic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Dictar por voz"
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:tint="@color/primary_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnSend"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Botón Enviar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSend"
                 android:layout_width="44dp"
@@ -144,7 +266,7 @@
                 android:insetBottom="0dp"
                 android:text="➤"
                 android:textColor="@color/bg_dark"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 app:cornerRadius="22dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -35,20 +35,20 @@ public class GeminiApiClient {
 
     public GeminiApiClient() {
         this.client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(35, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
+                .connectTimeout(25, TimeUnit.SECONDS)
+                .readTimeout(45, TimeUnit.SECONDS)
+                .writeTimeout(25, TimeUnit.SECONDS)
                 .build();
         this.gson = new Gson();
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
-    public void sendMessage(List<ChatMessage> history, String userPrompt, String apiKey, GeminiCallback callback) {
+    public void sendMessage(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, GeminiCallback callback) {
         String[] models = new String[]{"gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"};
-        tryModel(history, userPrompt, apiKey, models, 0, callback);
+        tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, 0, callback);
     }
 
-    private void tryModel(List<ChatMessage> history, String userPrompt, String apiKey, String[] models, int modelIndex, GeminiCallback callback) {
+    private void tryModel(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, String[] models, int modelIndex, GeminiCallback callback) {
         if (modelIndex >= models.length) {
             postError(callback, "Error: No se pudo conectar con los modelos de Gemini. Verifica tu API Key y conexión.");
             return;
@@ -58,6 +58,18 @@ public class GeminiApiClient {
         String url = BASE_URL + model + ":generateContent?key=" + apiKey;
 
         JsonObject root = new JsonObject();
+
+        // System Instruction si hay un modo especial activo
+        if (modeInstruction != null && !modeInstruction.isEmpty()) {
+            JsonObject sysInst = new JsonObject();
+            JsonArray sysParts = new JsonArray();
+            JsonObject p = new JsonObject();
+            p.addProperty("text", modeInstruction);
+            sysParts.add(p);
+            sysInst.add("parts", sysParts);
+            root.add("systemInstruction", sysInst);
+        }
+
         JsonArray contents = new JsonArray();
 
         // Agregar historial
@@ -66,22 +78,46 @@ public class GeminiApiClient {
                 JsonObject entry = new JsonObject();
                 entry.addProperty("role", msg.isUser() ? "user" : "model");
                 JsonArray parts = new JsonArray();
-                JsonObject part = new JsonObject();
-                part.addProperty("text", msg.getText());
-                parts.add(part);
+
+                // Si tenía imagen previa
+                if (msg.hasImage()) {
+                    JsonObject imgPart = new JsonObject();
+                    JsonObject inlineData = new JsonObject();
+                    inlineData.addProperty("mime_type", "image/jpeg");
+                    inlineData.addProperty("data", msg.getImageBase64());
+                    imgPart.add("inline_data", inlineData);
+                    parts.add(imgPart);
+                }
+
+                JsonObject textPart = new JsonObject();
+                textPart.addProperty("text", msg.getText());
+                parts.add(textPart);
+
                 entry.add("parts", parts);
                 contents.add(entry);
             }
         }
 
-        // Agregar mensaje actual si no está en historial
+        // Agregar mensaje actual
         if (userPrompt != null && !userPrompt.isEmpty()) {
             JsonObject currentEntry = new JsonObject();
             currentEntry.addProperty("role", "user");
             JsonArray parts = new JsonArray();
-            JsonObject part = new JsonObject();
-            part.addProperty("text", userPrompt);
-            parts.add(part);
+
+            // Adjuntar imagen actual si existe
+            if (imageBase64 != null && !imageBase64.isEmpty()) {
+                JsonObject imgPart = new JsonObject();
+                JsonObject inlineData = new JsonObject();
+                inlineData.addProperty("mime_type", "image/jpeg");
+                inlineData.addProperty("data", imageBase64);
+                imgPart.add("inline_data", inlineData);
+                parts.add(imgPart);
+            }
+
+            JsonObject textPart = new JsonObject();
+            textPart.addProperty("text", userPrompt);
+            parts.add(textPart);
+
             currentEntry.add("parts", parts);
             contents.add(currentEntry);
         }
@@ -97,13 +133,13 @@ public class GeminiApiClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                tryModel(history, userPrompt, apiKey, models, modelIndex + 1, callback);
+                tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful() || response.body() == null) {
-                    tryModel(history, userPrompt, apiKey, models, modelIndex + 1, callback);
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
                     return;
                 }
 
@@ -126,9 +162,9 @@ public class GeminiApiClient {
                             return;
                         }
                     }
-                    tryModel(history, userPrompt, apiKey, models, modelIndex + 1, callback);
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
                 } catch (Exception e) {
-                    tryModel(history, userPrompt, apiKey, models, modelIndex + 1, callback);
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
                 }
             }
         });
