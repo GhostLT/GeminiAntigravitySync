@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bg_surface"
@@ -17,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="14dp"
         android:text="Google Gemini API Key:"
         android:textColor="@color/text_secondary"
         android:textSize="13sp" />
@@ -28,12 +29,33 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:background="@color/bg_surface_light"
-        android:hint="AIzaSy..."
-        android:inputType="textPassword"
+        android:hint="Pega tu clave de Google AI Studio..."
+        android:inputType="textVisiblePassword"
         android:padding="10dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnTestKey"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginTop="6dp"
+        android:text="🔍 Probar Conexión con Gemini"
+        android:textColor="@color/primary_blue"
+        android:textSize="11sp"
+        app:cornerRadius="18dp"
+        app:strokeColor="@color/primary_blue" />
+
+    <TextView
+        android:id="@+id/tvTestStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/accent_green"
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,7 +75,7 @@
         android:padding="10dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -74,7 +96,7 @@
         android:padding="10dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <CheckBox
         android:id="@+id/cbAutoSync"

@@ -529,11 +529,40 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         EditText etRepoName = dialogView.findViewById(R.id.etRepoName);
         EditText etGithubToken = dialogView.findViewById(R.id.etGithubToken);
         CheckBox cbAutoSync = dialogView.findViewById(R.id.cbAutoSync);
+        com.google.android.material.button.MaterialButton btnTestKey = dialogView.findViewById(R.id.btnTestKey);
+        TextView tvTestStatus = dialogView.findViewById(R.id.tvTestStatus);
 
         etApiKey.setText(configManager.getApiKey());
         etRepoName.setText(configManager.getGithubRepo());
         etGithubToken.setText(configManager.getGithubToken());
         cbAutoSync.setChecked(configManager.isAutoSyncEnabled());
+
+        btnTestKey.setOnClickListener(v -> {
+            String testKey = etApiKey.getText().toString().trim();
+            if (testKey.isEmpty()) {
+                tvTestStatus.setVisibility(View.VISIBLE);
+                tvTestStatus.setText("❌ Ingresa una clave antes de probar.");
+                tvTestStatus.setTextColor(android.graphics.Color.parseColor("#FF5252"));
+                return;
+            }
+            tvTestStatus.setVisibility(View.VISIBLE);
+            tvTestStatus.setText("⏳ Probando conexión con Gemini...");
+            tvTestStatus.setTextColor(android.graphics.Color.parseColor("#8AB4F8"));
+
+            geminiClient.testConnection(testKey, new GeminiApiClient.GeminiCallback() {
+                @Override
+                public void onSuccess(String reply) {
+                    tvTestStatus.setText("✅ ¡Conexión exitosa! Modelos activos y listos.");
+                    tvTestStatus.setTextColor(android.graphics.Color.parseColor("#81C995"));
+                }
+
+                @Override
+                public void onError(String error) {
+                    tvTestStatus.setText("❌ " + error);
+                    tvTestStatus.setTextColor(android.graphics.Color.parseColor("#FF5252"));
+                }
+            });
+        });
 
         new AlertDialog.Builder(this)
                 .setView(dialogView)

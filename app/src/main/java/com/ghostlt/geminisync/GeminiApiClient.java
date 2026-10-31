@@ -43,14 +43,22 @@ public class GeminiApiClient {
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
-    public void sendMessage(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, GeminiCallback callback) {
-        String[] models = new String[]{"gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"};
-        tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, 0, callback);
+    public void testConnection(String apiKey, GeminiCallback callback) {
+        String cleanKey = apiKey != null ? apiKey.trim() : "";
+        String[] models = new String[]{"gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-lite-latest", "gemini-3.8-flash"};
+        tryModel(null, "Responde solo 'OK'", null, null, cleanKey, models, 0, null, callback);
     }
 
-    private void tryModel(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, String[] models, int modelIndex, GeminiCallback callback) {
+    public void sendMessage(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, GeminiCallback callback) {
+        String cleanKey = apiKey != null ? apiKey.trim() : "";
+        String[] models = new String[]{"gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-lite-latest", "gemini-3.8-flash"};
+        tryModel(history, userPrompt, imageBase64, modeInstruction, cleanKey, models, 0, null, callback);
+    }
+
+    private void tryModel(List<ChatMessage> history, String userPrompt, String imageBase64, String modeInstruction, String apiKey, String[] models, int modelIndex, String lastError, GeminiCallback callback) {
         if (modelIndex >= models.length) {
-            postError(callback, "Error: No se pudo conectar con los modelos de Gemini. Verifica tu API Key y conexión.");
+            String detail = lastError != null ? "\nDetalle: " + lastError : "Verifica tu API Key en Ajustes (⚙️) y conexión a internet.";
+            postError(callback, "No se pudo conectar con los modelos de Gemini." + detail);
             return;
         }
 
@@ -79,7 +87,6 @@ public class GeminiApiClient {
                 entry.addProperty("role", msg.isUser() ? "user" : "model");
                 JsonArray parts = new JsonArray();
 
-                // Si tenía imagen previa
                 if (msg.hasImage()) {
                     JsonObject imgPart = new JsonObject();
                     JsonObject inlineData = new JsonObject();
@@ -104,7 +111,6 @@ public class GeminiApiClient {
             currentEntry.addProperty("role", "user");
             JsonArray parts = new JsonArray();
 
-            // Adjuntar imagen actual si existe
             if (imageBase64 != null && !imageBase64.isEmpty()) {
                 JsonObject imgPart = new JsonObject();
                 JsonObject inlineData = new JsonObject();
@@ -133,13 +139,15 @@ public class GeminiApiClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
+                tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, e.getMessage(), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful() || response.body() == null) {
-                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
+                    String errBody = response.body() != null ? response.body().string() : response.message();
+                    String errorDesc = "HTTP " + response.code() + " (" + model + "): " + errBody;
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, errorDesc, callback);
                     return;
                 }
 
@@ -162,9 +170,9 @@ public class GeminiApiClient {
                             return;
                         }
                     }
-                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, "Sin candidatos en respuesta", callback);
                 } catch (Exception e) {
-                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, callback);
+                    tryModel(history, userPrompt, imageBase64, modeInstruction, apiKey, models, modelIndex + 1, e.getMessage(), callback);
                 }
             }
         });
