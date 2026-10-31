@@ -58,6 +58,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <!-- Botón Historial de Sesiones -->
+                <ImageButton
+                    android:id="@+id/btnHistory"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Historial de Sesiones"
+                    android:src="@android:drawable/ic_menu_recent_history"
+                    android:tint="@color/primary_blue" />
+
                 <!-- Botón Nueva Rama / Nuevo Chat -->
                 <ImageButton
                     android:id="@+id/btnNewBranch"

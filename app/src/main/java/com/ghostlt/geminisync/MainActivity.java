@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
     private MaterialButton btnQuickSync;
     private MaterialButton btnModes;
     private ImageButton btnNewBranch;
+    private ImageButton btnHistory;
     private ImageButton btnSettings;
     private ImageButton btnAttach;
     private ImageButton btnCamera;
@@ -72,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
     private GeminiApiClient geminiClient;
     private MemoryExtractor memoryExtractor;
     private GitHubSyncManager syncManager;
+    private SessionDatabaseHelper dbHelper;
+
+    private String currentSessionId;
+    private String currentSessionTitle;
 
     private TextToSpeech tts;
     private boolean isSyncing = false;
@@ -93,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         geminiClient = new GeminiApiClient();
         memoryExtractor = new MemoryExtractor(geminiClient);
         syncManager = new GitHubSyncManager(this, configManager);
+        dbHelper = new SessionDatabaseHelper(this);
 
+        initSessionId();
         initViews();
         setupChatRecycler();
         setupLaunchers();
@@ -108,6 +115,11 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         }
     }
 
+    private void initSessionId() {
+        currentSessionId = "session_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        currentSessionTitle = null;
+    }
+
     private void initViews() {
         recyclerChat = findViewById(R.id.recyclerChat);
         etMessageInput = findViewById(R.id.etMessageInput);
@@ -115,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         btnQuickSync = findViewById(R.id.btnQuickSync);
         btnModes = findViewById(R.id.btnModes);
         btnNewBranch = findViewById(R.id.btnNewBranch);
+        btnHistory = findViewById(R.id.btnHistory);
         btnSettings = findViewById(R.id.btnSettings);
         btnAttach = findViewById(R.id.btnAttach);
         btnCamera = findViewById(R.id.btnCamera);
@@ -182,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         btnQuickSync.setOnClickListener(v -> triggerAutoSync(false));
         btnSettings.setOnClickListener(v -> showSettingsDialog());
         btnNewBranch.setOnClickListener(v -> confirmNewBranch());
+        btnHistory.setOnClickListener(v -> showHistoryDialog());
         btnModes.setOnClickListener(v -> showModesMenu(v));
 
         btnAttach.setOnClickListener(v -> galleryPickerLauncher.launch("image/*"));
@@ -293,6 +307,11 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         messageList.add(new ChatMessage(text, true, time, imageBase64, null));
         chatAdapter.notifyItemInserted(messageList.size() - 1);
         recyclerChat.scrollToPosition(messageList.size() - 1);
+
+        if (currentSessionTitle == null && text != null && !text.isEmpty()) {
+            currentSessionTitle = text.length() > 45 ? text.substring(0, 45) + "..." : text;
+        }
+        saveCurrentSessionToDb();
     }
 
     private void addGeminiMessage(String text) {
@@ -300,6 +319,98 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
         messageList.add(new ChatMessage(text, false, time, null, currentModeName));
         chatAdapter.notifyItemInserted(messageList.size() - 1);
         recyclerChat.scrollToPosition(messageList.size() - 1);
+
+        saveCurrentSessionToDb();
+    }
+
+    private void saveCurrentSessionToDb() {
+        if (messageList.size() > 1 && currentSessionId != null) {
+            String title = currentSessionTitle != null ? currentSessionTitle : "Sesión " + new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(new Date());
+            dbHelper.saveOrUpdateSession(currentSessionId, title, messageList, currentModeName);
+        }
+    }
+
+    // --- Historial de Sesiones ---
+    private void showHistoryDialog() {
+        saveCurrentSessionToDb();
+        List<SessionDatabaseHelper.SessionItem> sessions = dbHelper.getAllSessions();
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.dialog_session_history, null);
+
+        RecyclerView recyclerSessions = view.findViewById(R.id.recyclerSessions);
+        TextView tvEmptyHistory = view.findViewById(R.id.tvEmptyHistory);
+        ImageButton btnClose = view.findViewById(R.id.btnCloseHistory);
+        com.google.android.material.button.MaterialButton btnClear = view.findViewById(R.id.btnClearAllSessions);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                .setView(view)
+                .create();
+
+        if (sessions.isEmpty()) {
+            tvEmptyHistory.setVisibility(View.VISIBLE);
+            recyclerSessions.setVisibility(View.GONE);
+        } else {
+            tvEmptyHistory.setVisibility(View.GONE);
+            recyclerSessions.setVisibility(View.VISIBLE);
+            recyclerSessions.setLayoutManager(new LinearLayoutManager(this));
+            SessionAdapter adapter = new SessionAdapter(sessions, new SessionAdapter.SessionClickListener() {
+                @Override
+                public void onSessionClick(SessionDatabaseHelper.SessionItem session) {
+                    List<ChatMessage> restoredMsgs = dbHelper.getSessionMessages(session.sessionId);
+                    if (restoredMsgs != null && !restoredMsgs.isEmpty()) {
+                        currentSessionId = session.sessionId;
+                        currentSessionTitle = session.title;
+                        currentModeName = session.modeTag != null ? session.modeTag : "Modo Estándar";
+                        messageList.clear();
+                        messageList.addAll(restoredMsgs);
+                        chatAdapter.notifyDataSetChanged();
+                        recyclerChat.scrollToPosition(messageList.size() - 1);
+                        tvSyncStatus.setText("● " + currentModeName);
+                        dialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Reanudada: " + session.title, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "No se encontraron mensajes en esta sesión.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onSessionDelete(SessionDatabaseHelper.SessionItem session) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Eliminar sesión")
+                            .setMessage("¿Deseas eliminar '" + session.title + "' del historial?")
+                            .setPositiveButton("Eliminar", (d, w) -> {
+                                dbHelper.deleteSession(session.sessionId);
+                                sessions.remove(session);
+                                if (sessions.isEmpty()) {
+                                    tvEmptyHistory.setVisibility(View.VISIBLE);
+                                    recyclerSessions.setVisibility(View.GONE);
+                                }
+                                recyclerSessions.getAdapter().notifyDataSetChanged();
+                                Toast.makeText(MainActivity.this, "Sesión eliminada", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Cancelar", null)
+                            .show();
+                }
+            });
+            recyclerSessions.setAdapter(adapter);
+        }
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnClear.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Vaciar Historial")
+                    .setMessage("¿Estás seguro de que deseas eliminar todas las sesiones guardadas?")
+                    .setPositiveButton("Vaciar", (d, w) -> {
+                        dbHelper.clearAllSessions();
+                        dialog.dismiss();
+                        Toast.makeText(this, "Historial vaciado", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+        });
+
+        dialog.show();
     }
 
     // --- Crear Rama / Nuevo Chat ---
@@ -313,8 +424,10 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
                 .setTitle("🌱 Crear Nueva Rama de Chat")
                 .setMessage("¿Deseas iniciar una nueva rama? Se sincronizará automáticamente el conocimiento de esta sesión y se abrirá un chat limpio.")
                 .setPositiveButton("Sí, Nueva Rama", (dialog, which) -> {
+                    saveCurrentSessionToDb();
                     triggerAutoSync(true);
                     messageList.clear();
+                    initSessionId();
                     addGeminiMessage("🌱 Nueva rama iniciada. El contexto de la sesión anterior fue respaldado. ¿En qué trabajamos ahora?");
                     chatAdapter.notifyDataSetChanged();
                 })
@@ -580,6 +693,7 @@ public class MainActivity extends AppCompatActivity implements ChatAdapter.Messa
     @Override
     protected void onStop() {
         super.onStop();
+        saveCurrentSessionToDb();
         if (configManager.isAutoSyncEnabled() && messageList.size() >= 3) {
             triggerAutoSync(true);
         }
