@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Gemini Sync</string>
+    <string name="chat_hint">Pregunta algo a Gemini...</string>
+    <string name="sync_button">Sincronizar Memoria</string>
+    <string name="settings_title">Configuración de Sincronización</string>
+    <string name="api_key_label">Google Gemini API Key</string>
+    <string name="github_token_label">GitHub Token (Opcional para Push directo)</string>
+    <string name="github_repo_label">Repositorio GitHub (ej. GhostLT/cool-newton)</string>
+    <string name="save_settings">Guardar Cambios</string>
+    <string name="sync_success">¡Memoria técnica sincronizada con éxito!</string>
+</resources>
